@@ -18,11 +18,16 @@ let func = fn({
 
   args: {
     value: {
-      required: true
+      required: true,
+      defaultsTo: 10
     }
   },
 
   call: function(args, state, done) {
+    if (this.args.value.defaultsTo !== undefined) {
+      state.ensureExists(args.value, this.args.value.defaultsTo);
+    }
+
     state.set(args.value, state.get(args.value) + 1);
     done();
   }
@@ -40,14 +45,18 @@ test('documentation', function(done) {
   eq(func().name, 'addOne', done);
 });
 
-test('required argument', function(done) {
+test('required argument option', function(done) {
   stack({ value: 1 }).then(func({})).then(function(s) {
     done(new Error('expecting function to throw an error.'));
   }).catch(function(e) {
     eq(e.message, 'value argument is required.', done);
   });
 });
-//
-// test('default argument value', function(done) {
-//
-// });
+
+test('defaultsTo argument option', function(done) {
+  stack({}).then(func({ value: 'value' })).then(function(s) {
+    eq(s.get('value'), 11, done);
+  }).catch(function(e) {
+    done(e);
+  });
+});

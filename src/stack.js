@@ -15,6 +15,10 @@ module.exports = {
 
           set: function(key, value) {
             opath.set(this.state, key, value);
+          },
+
+          ensureExists: function(key, defaultsTo) {
+            opath.ensureExists(this.state, key, defaultsTo);
           }
         });
       }),
